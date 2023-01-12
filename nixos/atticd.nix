@@ -142,7 +142,6 @@ in
           ExecStart = "${cfg.package}/bin/atticd -f ${checkedConfigFile}";
           EnvironmentFile = cfg.credentialsFile;
           StateDirectory = "atticd"; # for usage with local storage and sqlite
-          DynamicUser = true;
           ProtectHome = true;
           ProtectHostname = true;
           ProtectKernelLogs = true;
@@ -154,10 +153,23 @@ in
           RestrictNamespaces = true;
           RestrictRealtime = true;
           RestrictSUIDSGID = true;
+          User = "atticd";
+          Group = "atticd";
         };
       };
 
       environment.systemPackages = [ atticadmWrapper ];
+
+      users.users = {
+        atticd = {
+          group = "atticd";
+          isSystemUser = true;
+        };
+      };
+
+      users.groups = {
+        atticd = { };
+      };
     }
     (lib.mkIf cfg.useFlakeCompatOverlay {
       nixpkgs.overlays = [ overlay ];
